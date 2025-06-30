@@ -150,7 +150,7 @@ def denoise_image(model, combined_img, T, device):
     return denoised_img
 
     
-def denoise_image(model, combined_img, T, device):
+def denoise_image2(model, combined_img, T, device):
     '''
     Denoise image with a one-step heuristic approach
     '''
