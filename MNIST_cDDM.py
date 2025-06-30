@@ -162,7 +162,7 @@ def denoise_image2(model, combined_img, T, device):
     pred_noise = model(combined_img, t)
  
     denoised_img = combined_img - pred_noise
-    threshold = 0.9 # set threshold for heuristic denoising sensitivity
+    threshold = 0.5 # set threshold for heuristic denoising sensitivity
     mask = pred_noise.abs().mean(dim=1, keepdim=True) > threshold  # (B, 1, H, W)
 
     mask = mask.expand_as(denoised_img)
@@ -255,16 +255,16 @@ def create_gt_file(output_dir, gt_filename):
                 gt_file.write(f"{filename} {label}\n")
 
 
-T, num_epochs, lr = 30, 100, 0.001
+T, num_epochs, lr = 30, 50, 0.001
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 output_dir = 'MNIST_cDDM'
 
 model = ConditionalDiffusionUNet().to(device)
 optimizer = torch.optim.AdamW(model.parameters(), lr=lr)
-scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100)
+scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=50)
 
 data_loader = DataLoader(dataset_name='synthetic_MNIST', img_res=(28, 28), batch_size=128)
-print(f"DDPM, MNIST, epochs={num_epochs}, T={T}", flush=True)
+print(f"cDDM, MNIST, epochs={num_epochs}, T={T}", flush=True)
 
 for epoch in range(num_epochs):
     for idx, (combined_img, undertext_img, labels, original_idx) in enumerate(data_loader.load_batch()):
